@@ -1,6 +1,6 @@
 import 'package:bus_stop/contollers/authController.dart';
 import 'package:bus_stop/services/auth.dart';
-import 'package:bus_stop/shared/loading.dart';
+import 'package:bus_stop/views/shared/loading.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';

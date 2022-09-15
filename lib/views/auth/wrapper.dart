@@ -1,6 +1,6 @@
 import 'package:bus_stop/contollers/authController.dart';
-import 'package:bus_stop/newScreens/home/homeType.dart';
-import 'package:bus_stop/shared/loading.dart';
+import 'package:bus_stop/views/homeType.dart';
+import 'package:bus_stop/views/shared/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'auhenticate.dart';
@@ -18,7 +18,7 @@ class Wrapper extends StatelessWidget {
         return AuthWrapper();
       } else {
         return HomeType(
-          userID: userProvider.client.uid,
+          client: userProvider.client,
         );
       }
     }

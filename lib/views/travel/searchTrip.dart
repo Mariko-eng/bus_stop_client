@@ -1,21 +1,20 @@
-import 'package:bus_stop/contollers/lcoProvider.dart';
 import 'package:bus_stop/models/destination.dart';
 import 'package:bus_stop/models/trip.dart';
-import 'package:bus_stop/newScreens/home/busStops.dart';
-import 'package:bus_stop/newScreens/home/destinations.dart';
-import 'package:bus_stop/newScreens/home/tickets.dart';
-import 'package:bus_stop/newScreens/home/tripsList.dart';
+import 'package:bus_stop/views/travel/Trips.dart';
+import 'package:bus_stop/views/busCompany/busCompanyScreen.dart';
+import 'package:bus_stop/views/travel/tickets.dart';
 import 'package:bus_stop/services/auth.dart';
 import 'package:bus_stop/services/firestore.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+import 'package:bus_stop/models/user.dart';
 
 class SearchTrip extends StatefulWidget {
-  final String orderType;
+  final Client client;
 
-  const SearchTrip({Key key, this.orderType}) : super(key: key);
+  const SearchTrip({Key key, this.client}) : super(key: key);
 
   @override
   _SearchTripState createState() => _SearchTripState();
@@ -26,9 +25,9 @@ class _SearchTripState extends State<SearchTrip> {
   List<Trip> trips;
   String dateInputText = "";
 
-  getTrips(String departureLocation, String arrivalLocation) async {
+  getTrips({String departureLocationId, String arrivalLocationId}) async {
     final results =
-        await firestore.searchTrips(departureLocation, arrivalLocation);
+        await firestore.searchTrips(departureLocationId, arrivalLocationId);
     setState(() {
       trips = results;
     });
@@ -36,50 +35,35 @@ class _SearchTripState extends State<SearchTrip> {
 
   final AuthService _auth = AuthService();
   bool show = true;
-
-  Destination _fromDest;
-  Destination _toDest;
-  final TextEditingController _fromController = TextEditingController();
-  final TextEditingController _toController = TextEditingController();
+  final _arrivalController = TextEditingController();
+  final _arrivalIdController = TextEditingController();
+  final _departureController = TextEditingController();
+  final _departureIdController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
-    LocationsProvider _locProvider = Provider.of<LocationsProvider>(context);
     final destinations = Provider.of<List<Destination>>(context) ?? [];
 
-    if (_locProvider.destinationFrom != null) {
-      setState(() {
-        _fromController.text = _locProvider.destinationFrom.name;
-        _fromDest = _locProvider.destinationFrom;
-      });
-    }
-
-    if (_locProvider.destinationTo != null) {
-      setState(() {
-        _toController.text = _locProvider.destinationTo.name;
-        _toDest = _locProvider.destinationTo;
-      });
-    }
-
     return Scaffold(
-      appBar: widget.orderType == "Cargo"
-          ? AppBar(
-              elevation: 0,
-              iconTheme: IconThemeData(color: Colors.red[900]),
-              backgroundColor: Colors.grey[200],
-              centerTitle: true,
-              title: Text(
-                widget.orderType.toUpperCase(),
-                style: TextStyle(color: Colors.red[900]),
-              ),
-            )
-          : AppBar(
-              elevation: 0,
-              backgroundColor: Colors.red[900],
-              centerTitle: true,
-              title: Text(widget.orderType.toUpperCase()),
-            ),
+      appBar: AppBar(
+          backgroundColor: const Color(0xfffdfdfd),
+          elevation: 0,
+          leading: GestureDetector(
+            onTap: () {
+              Navigator.of(context).pop();
+            },
+            child: SizedBox(
+                width: 20,
+                height: 25,
+                child: Image.asset(
+                  'assets/images/back_arrow.png',
+                )),
+          ),
+          title: Text(
+            "TRAVEL MENU".toUpperCase(),
+            style: TextStyle(color: Colors.red[900]),
+          )),
       body: SafeArea(
         child: SizedBox(
           height: MediaQuery.of(context).size.height,
@@ -117,8 +101,8 @@ class _SearchTripState extends State<SearchTrip> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      BusStops(
-                                                        destinations: destinations,
+                                                      BusCompanyScreen(
+                                                        client: widget.client,
                                                       )));
                                         },
                                         child: SizedBox(
@@ -148,7 +132,7 @@ class _SearchTripState extends State<SearchTrip> {
                                                 width: 100,
                                                 alignment: Alignment.center,
                                                 child: const Text(
-                                                  "Maps",
+                                                  "Stops",
                                                   style: TextStyle(
                                                       color: Colors.white,
                                                       fontSize: 18,
@@ -174,14 +158,13 @@ class _SearchTripState extends State<SearchTrip> {
                                     ? Container()
                                     : GestureDetector(
                                         onTap: () {
-                                          if (widget.orderType == "Cargo") {
-                                          } else {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        TripTickets()));
-                                          }
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      TripTickets(
+                                                        client: widget.client,
+                                                      )));
                                         },
                                         child: Container(
                                           width: 200,
@@ -207,64 +190,33 @@ class _SearchTripState extends State<SearchTrip> {
                                               ),
                                               GestureDetector(
                                                 onTap: () {
-                                                  if (widget.orderType ==
-                                                      "Cargo") {
-                                                  } else {
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                TripTickets()));
-                                                  }
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              TripTickets(
+                                                                client: widget
+                                                                    .client,
+                                                              )));
                                                 },
-                                                child: widget.orderType ==
-                                                        "Cargo"
-                                                    ? Container(
-                                                        height: 40,
-                                                        width: 100,
-                                                        alignment:
-                                                            Alignment.center,
-                                                        child: const Text(
-                                                          "Parcels",
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white,
-                                                              fontSize: 18,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
-                                                        ),
-                                                        decoration: BoxDecoration(
-                                                            color:
-                                                                Colors.red[900],
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10)),
-                                                      )
-                                                    : Container(
-                                                        height: 40,
-                                                        width: 100,
-                                                        alignment:
-                                                            Alignment.center,
-                                                        child: const Text(
-                                                          "Tickets",
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white,
-                                                              fontSize: 18,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
-                                                        ),
-                                                        decoration: BoxDecoration(
-                                                            color:
-                                                                Colors.red[900],
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        10)),
-                                                      ),
+                                                child: Container(
+                                                  height: 40,
+                                                  width: 100,
+                                                  alignment: Alignment.center,
+                                                  child: const Text(
+                                                    "Tickets",
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                      color: Colors.red[900],
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10)),
+                                                ),
                                               )
                                             ],
                                           ),
@@ -284,6 +236,7 @@ class _SearchTripState extends State<SearchTrip> {
                                           children: [
                                             GestureDetector(
                                               onTap: () async {
+                                                Navigator.of(context).pop();
                                                 await _auth.signOut();
                                               },
                                               child: Container(
@@ -306,6 +259,7 @@ class _SearchTripState extends State<SearchTrip> {
                                             ),
                                             GestureDetector(
                                               onTap: () async {
+                                                Navigator.of(context).pop();
                                                 await _auth.signOut();
                                               },
                                               child: Container(
@@ -342,7 +296,7 @@ class _SearchTripState extends State<SearchTrip> {
                                     });
                                   },
                                   child: Container(
-                                    margin: EdgeInsets.only(top: 5),
+                                    margin: const EdgeInsets.only(top: 5),
                                     width: 70,
                                     height: 70,
                                     decoration: BoxDecoration(
@@ -433,69 +387,34 @@ class _SearchTripState extends State<SearchTrip> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        widget.orderType == "Cargo"
-                                            ? Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: const [
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            horizontal: 50),
-                                                    child: Text(
-                                                      "Choose Your PickUp And",
-                                                      style: TextStyle(
-                                                        color: Colors.black87,
-                                                          fontSize: 18,
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            horizontal: 50),
-                                                    child: Text(
-                                                      "DropOff Locations..",
-                                                      style: TextStyle(
-                                                          color: Colors.black54,
-                                                          fontSize: 17,
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
-                                                  ),
-                                                ],
-                                              )
-                                            : Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: const [
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            horizontal: 50),
-                                                    child: Text(
-                                                      "Where would you like",
-                                                      style: TextStyle(
-                                                          fontSize: 20,
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            horizontal: 50),
-                                                    child: Text(
-                                                      "to go today?",
-                                                      style: TextStyle(
-                                                          fontSize: 20,
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                    ),
-                                                  ),
-                                                ],
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: const [
+                                            Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 50),
+                                              child: Text(
+                                                "Where would you like",
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.bold),
                                               ),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 50),
+                                              child: Text(
+                                                "to go today?",
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                         Expanded(
                                           flex: 2,
                                           child: Padding(
@@ -651,28 +570,13 @@ class _SearchTripState extends State<SearchTrip> {
                                                                           ),
                                                                         )),
                                                                     onTap: () {
-                                                                      showModalBottomSheet(
-                                                                          shape: const RoundedRectangleBorder(
-                                                                              borderRadius: BorderRadius.vertical(
-                                                                                  top: Radius.circular(
-                                                                                      25.0))),
-                                                                          backgroundColor: Colors
-                                                                              .white,
-                                                                          context:
-                                                                              context,
-                                                                          isScrollControlled:
-                                                                              true,
-                                                                          builder: (context) =>
-                                                                              SizedBox(
-                                                                                height: MediaQuery.of(context).size.height * 0.90,
-                                                                                child: Destinations(
-                                                                                  locType: "from",
-                                                                                  destinations: destinations,
-                                                                                ),
-                                                                              ));
+                                                                      showDestinations(
+                                                                          context,
+                                                                          destinations,
+                                                                          true);
                                                                     },
                                                                     controller:
-                                                                        _fromController,
+                                                                        _departureController,
                                                                   ),
                                                                 ),
                                                               ),
@@ -713,8 +617,6 @@ class _SearchTripState extends State<SearchTrip> {
                                                               child: Stack(
                                                                 children: [
                                                                   Positioned(
-                                                                    // top: 10,
-                                                                    // left: 40,
                                                                     child:
                                                                         Container(
                                                                       alignment:
@@ -750,21 +652,13 @@ class _SearchTripState extends State<SearchTrip> {
                                                                             )),
                                                                         onTap:
                                                                             () {
-                                                                          showModalBottomSheet(
-                                                                              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
-                                                                              backgroundColor: Colors.white,
-                                                                              context: context,
-                                                                              isScrollControlled: true,
-                                                                              builder: (context) => SizedBox(
-                                                                                    height: MediaQuery.of(context).size.height * 0.90,
-                                                                                    child: Destinations(
-                                                                                      locType: "to",
-                                                                                      destinations: destinations,
-                                                                                    ),
-                                                                                  ));
+                                                                          showDestinations(
+                                                                              context,
+                                                                              destinations,
+                                                                              false);
                                                                         },
                                                                         controller:
-                                                                            _toController,
+                                                                            _arrivalController,
                                                                       ),
                                                                     ),
                                                                   ),
@@ -789,155 +683,67 @@ class _SearchTripState extends State<SearchTrip> {
                                           ),
                                         ),
                                         Expanded(
-                                          child: Container(
-                                            child: Column(
-                                              children: [
-                                                // Expanded(
-                                                //   child: Padding(
-                                                //     padding: const EdgeInsets
-                                                //             .symmetric(
-                                                //         horizontal: 50),
-                                                //     child: Container(
-                                                //       child: Row(
-                                                //         mainAxisAlignment:
-                                                //             MainAxisAlignment
-                                                //                 .spaceBetween,
-                                                //         children: [
-                                                //           GestureDetector(
-                                                //             onTap: () async {
-                                                //               DateTime pickedDate = await showDatePicker(
-                                                //                   context:
-                                                //                       context,
-                                                //                   initialDate:
-                                                //                       DateTime
-                                                //                           .now(),
-                                                //                   firstDate:
-                                                //                       DateTime
-                                                //                           .now(),
-                                                //                   lastDate:
-                                                //                       DateTime(
-                                                //                           2101));
-                                                //
-                                                //               if (pickedDate !=
-                                                //                   null) {
-                                                //                 print(
-                                                //                     pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
-                                                //                 String
-                                                //                     formattedDate =
-                                                //                     DateFormat(
-                                                //                             'yyyy-MM-dd')
-                                                //                         .format(
-                                                //                             pickedDate);
-                                                //                 print(
-                                                //                     formattedDate); //formatted date output using intl package =>  2021-03-16
-                                                //                 //you can implement different kind of Date Format here according to your requirement
-                                                //
-                                                //                 setState(() {
-                                                //                   dateInputText =
-                                                //                       formattedDate; //set output date to TextField value.
-                                                //                 });
-                                                //               } else {
-                                                //                 print(
-                                                //                     "Date is not selected");
-                                                //               }
-                                                //             },
-                                                //             child: Row(
-                                                //               children: const [
-                                                //                 Icon(
-                                                //                   Icons
-                                                //                       .calendar_today,
-                                                //                   color: Color(
-                                                //                       0xffE4181D),
-                                                //                 ),
-                                                //                 Text("Today"),
-                                                //               ],
-                                                //             ),
-                                                //           ),
-                                                //           Row(
-                                                //             children: const [
-                                                //               Text("1"),
-                                                //               Text("Passenger"),
-                                                //             ],
-                                                //           )
-                                                //         ],
-                                                //       ),
-                                                //     ),
-                                                //   ),
-                                                // ),
-                                                Expanded(
-                                                  child: Padding(
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        horizontal: 30,
-                                                        vertical: 10),
-                                                    child: GestureDetector(
-                                                      onTap: () async {
-                                                        if (_fromDest != null &&
-                                                            _toDest != null) {
-                                                          await getTrips(
-                                                              _fromDest.id,
-                                                              _toDest.id);
-                                                        }
-                                                        if (trips != null) {
-                                                          Navigator.of(context).push(
-                                                              MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) =>
-                                                                          Trips(
-                                                                            trips:
-                                                                                trips,
-                                                                            orderType:
-                                                                                widget.orderType,
-                                                                          )));
-                                                        }
-                                                      },
-                                                      child: Container(
-                                                          alignment:
-                                                              Alignment.center,
-                                                          height: 50,
-                                                          decoration: widget
-                                                                      .orderType ==
-                                                                  "Cargo"
-                                                              ? BoxDecoration(
-                                                                  color: Colors
-                                                                          .grey[
-                                                                      100],
-                                                                  borderRadius:
-                                                                      BorderRadius.circular(
-                                                                          20.0),
-                                                                  border: Border.all(
-                                                                      color: const Color(
-                                                                          0xffE4181D)))
-                                                              : BoxDecoration(
-                                                                  color: const Color(
-                                                                      0xffE4181D),
-                                                                  borderRadius:
-                                                                      BorderRadius.circular(
-                                                                          20.0)),
-                                                          child: Text(
-                                                            "Search Trip",
-                                                            style: widget.orderType ==
-                                                                    "Cargo"
-                                                                ? TextStyle(
-                                                                    fontSize:
-                                                                        18,
-                                                                    color: Colors
-                                                                            .red[
-                                                                        900])
-                                                                : const TextStyle(
-                                                                    fontSize:
-                                                                        18,
-                                                                    color: Colors
-                                                                        .white),
-                                                          )),
-                                                    ),
+                                          child: Column(
+                                            children: [
+                                              Expanded(
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      horizontal: 30,
+                                                      vertical: 10),
+                                                  child: GestureDetector(
+                                                    onTap: () async {
+                                                      if (_departureIdController !=
+                                                              null &&
+                                                          _arrivalIdController !=
+                                                              null) {
+                                                        await getTrips(
+                                                          departureLocationId:
+                                                              _departureIdController
+                                                                  .text,
+                                                          arrivalLocationId:
+                                                              _arrivalIdController
+                                                                  .text,
+                                                        );
+                                                      }
+                                                      if (trips != null) {
+                                                        Navigator.of(context).push(
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        Trips(
+                                                                          client:
+                                                                              widget.client,
+                                                                          trips:
+                                                                              trips,
+                                                                        )));
+                                                      }
+                                                    },
+                                                    child: Container(
+                                                        alignment:
+                                                            Alignment.center,
+                                                        height: 50,
+                                                        decoration: BoxDecoration(
+                                                            color: const Color(
+                                                                0xffE4181D),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        20.0)),
+                                                        child: const Text(
+                                                          "Search Trip",
+                                                          style: TextStyle(
+                                                              fontSize: 18,
+                                                              color:
+                                                                  Colors.white),
+                                                        )),
                                                   ),
                                                 ),
-                                                SizedBox(
-                                                  height: 10,
-                                                )
-                                              ],
-                                            ),
+                                              ),
+                                              const SizedBox(
+                                                height: 10,
+                                              )
+                                            ],
                                           ),
                                         ),
                                       ],
@@ -956,5 +762,141 @@ class _SearchTripState extends State<SearchTrip> {
         ),
       ),
     );
+  }
+
+  Future<void> showDestinations(
+      BuildContext context, List<Destination> data, bool isDeparture) async {
+    List sr = [];
+    return await showDialog(
+        context: context,
+        builder: (context) {
+          final TextEditingController _ctr = TextEditingController();
+          return StatefulBuilder(
+              builder: (context, setState) => AlertDialog(
+                    content: SizedBox(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      child: LayoutBuilder(
+                        builder: (ctx, constraints) {
+                          return Column(
+                            children: [
+                              Container(
+                                height: 50,
+                                width: constraints.maxWidth,
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                        child: TextField(
+                                      decoration: const InputDecoration(
+                                          hintText: "Search Here",
+                                          focusedBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.red)),
+                                          enabledBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.red))),
+                                      controller: _ctr,
+                                      onChanged: (val) {
+                                        List l = [];
+                                        setState(() {
+                                          if (_ctr.text.isNotEmpty) {
+                                            for (int i = 0;
+                                                i < data.length;
+                                                i++) {
+                                              if (data[i]
+                                                  .name
+                                                  .toLowerCase()
+                                                  .contains(_ctr.text
+                                                      .toLowerCase())) {
+                                                l.add(data[i]);
+                                              }
+                                            }
+                                            sr = l;
+                                          } else {
+                                            sr = l;
+                                          }
+                                        });
+                                      },
+                                    )),
+                                    const Icon(Icons.search)
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                  height: constraints.maxHeight * 0.8,
+                                  width: constraints.maxWidth,
+                                  color: Colors.grey[200],
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 5),
+                                  child: sr.isNotEmpty
+                                      ? ListView.builder(
+                                          itemCount: sr.length,
+                                          itemBuilder: (context1, int i) =>
+                                              GestureDetector(
+                                                onTap: () {
+                                                  if (isDeparture) {
+                                                    setState(() {
+                                                      _departureController
+                                                          .text = sr[i].name;
+                                                      _departureIdController
+                                                          .text = sr[i].id;
+                                                    });
+                                                  } else {
+                                                    setState(() {
+                                                      _arrivalController.text =
+                                                          sr[i].name;
+                                                      _arrivalIdController
+                                                          .text = sr[i].id;
+                                                    });
+                                                  }
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(
+                                                        Icons.arrow_right),
+                                                    Text(sr[i].name),
+                                                  ],
+                                                ),
+                                              ))
+                                      : ListView.builder(
+                                          itemCount: data.length,
+                                          itemBuilder: (context1, int i) =>
+                                              GestureDetector(
+                                                onTap: () {
+                                                  if (isDeparture) {
+                                                    setState(() {
+                                                      _departureController
+                                                          .text = data[i].name;
+                                                      _departureIdController
+                                                          .text = data[i].id;
+                                                    });
+                                                  } else {
+                                                    setState(() {
+                                                      _arrivalController.text =
+                                                          data[i].name;
+                                                      _arrivalIdController
+                                                          .text = data[i].id;
+                                                    });
+                                                  }
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(
+                                                        Icons.arrow_right),
+                                                    Text(data[i].name),
+                                                  ],
+                                                ),
+                                              ))),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                  ));
+        });
   }
 }

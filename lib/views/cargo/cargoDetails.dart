@@ -1,10 +1,12 @@
 import 'package:bus_stop/models/trip.dart';
-import 'package:bus_stop/newScreens/home/checkOutCargo.dart';
+import 'package:bus_stop/views/cargo/checkOutCargo.dart';
 import 'package:flutter/material.dart';
+import 'package:bus_stop/models/user.dart';
 
 class CargoDetails extends StatefulWidget {
+  final Client client;
   final Trip trip;
-  const CargoDetails({Key key, this.trip}) : super(key: key);
+  const CargoDetails({Key key,this.client ,this.trip}) : super(key: key);
 
   @override
   _CargoDetailsState createState() => _CargoDetailsState();
@@ -497,6 +499,7 @@ class _CargoDetailsState extends State<CargoDetails> {
                 onPressed: () async {
                   Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => CheckOutCargo(
+                      client: widget.client,
                       itemDesc: itemDescController.text.trim(),
                       itemDim: option,
                       itemDimCharges: optionCharges,

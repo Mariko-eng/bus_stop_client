@@ -1,28 +1,23 @@
 import 'package:bus_stop/models/trip.dart';
-import 'package:bus_stop/newScreens/home/cargoDetails.dart';
-import 'package:bus_stop/newScreens/home/tripDetails.dart';
-import 'package:bus_stop/shared/utils.dart';
+import 'package:bus_stop/views/travel/tripDetails.dart';
+import 'package:bus_stop/views/shared/utils.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
+import 'package:bus_stop/models/user.dart';
 
 class TripTile extends StatelessWidget {
-  final String orderType;
+  final Client client;
   final Trip trip;
-  const TripTile({this.trip,this.orderType});
+  const TripTile({Key key,this.trip,this.client})  : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
     onTap: (){
-      orderType == "Cargo" ?
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => CargoDetails(trip: trip,))):
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => TripDetails(trip: trip,)));
+              builder: (context) => TripDetails(client: client, trip: trip,)));
     },
       child: Container(
         alignment: Alignment.center,
@@ -35,11 +30,11 @@ class TripTile extends StatelessWidget {
               child: Row(children: [
                 Text(
                   trip.departure['name'],
-                  style: TextStyle(color: Colors.black54,
+                  style: const TextStyle(color: Colors.black54,
                   fontSize: 13
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 5,
                 ),
                 Container(
@@ -47,17 +42,17 @@ class TripTile extends StatelessWidget {
                   width: 20,
                   color: Colors.red[900],
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 5,
                 ),
                 Text(trip.arrival['name'],
-                  style: TextStyle(color: Colors.black54,
+                  style: const TextStyle(color: Colors.black54,
                       fontSize: 13
                   ),
                 ),
               ]),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Container(
@@ -79,20 +74,20 @@ class TripTile extends StatelessWidget {
                                 topLeft: Radius.circular(20))),
                         child: Row(
                           children: [
-                            SizedBox(
+                            const SizedBox(
                               width: 25,
                             ),
                             Container(
-                              padding: EdgeInsets.symmetric(vertical: 30),
+                              padding: const EdgeInsets.symmetric(vertical: 30),
                               width: 60,
                               child: Column(
                                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     dateToTime(trip.depatureTime),
-                                    style: TextStyle(color: Colors.white),
+                                    style: const TextStyle(color: Colors.white),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 55,
                                   ),
                                   Text(
@@ -108,7 +103,7 @@ class TripTile extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 5,
                                   ),
                                   Container(
@@ -139,7 +134,7 @@ class TripTile extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            Container(
+                            SizedBox(
                               height: 100,
                               width: 100,
                               child: Column(
@@ -149,22 +144,18 @@ class TripTile extends StatelessWidget {
                                   Padding(
                                     padding: const EdgeInsets.only(
                                         left: 5, bottom: 10, right: 5, top: 8),
-                                    child: Container(
-                                      child: Text(
-                                        trip.departure['name'],
-                                        style: TextStyle(color: Colors.white),
-                                      ),
+                                    child: Text(
+                                      trip.departure['name'],
+                                      style: const TextStyle(color: Colors.white),
                                     ),
                                   ),
                                   // Container(height: 55,),
                                   Padding(
                                     padding: const EdgeInsets.only(
                                         left: 5, bottom: 8, right: 5, top: 1),
-                                    child: Container(
-                                      child: Text(
-                                        trip.arrival['name'],
-                                        style: TextStyle(color: Colors.white),
-                                      ),
+                                    child: Text(
+                                      trip.arrival['name'],
+                                      style: TextStyle(color: Colors.white),
                                     ),
                                   ),
                                 ],
@@ -176,16 +167,14 @@ class TripTile extends StatelessWidget {
                               alignment: Alignment.center,
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Container(
-                                  child: Text(
-                                    trip.companyData['name'],
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 15),
-                                  ),
+                                child: Text(
+                                  trip.companyData['name'],
+                                  style: const TextStyle(
+                                      color: Colors.white, fontSize: 15),
                                 ),
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 25,
                             ),
                           ],
@@ -197,7 +186,7 @@ class TripTile extends StatelessWidget {
                       child: Container(
                         width: 20,
                         height: 20,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                             color: Color(0xfffdfdfd),
                             borderRadius: BorderRadius.only(
                                 topRight: Radius.circular(50))),
@@ -208,7 +197,7 @@ class TripTile extends StatelessWidget {
                       child: Container(
                         width: 20,
                         height: 20,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                             color: Color(0xfffdfdfd),
                             borderRadius: BorderRadius.only(
                                 topLeft: Radius.circular(50))),
@@ -217,9 +206,9 @@ class TripTile extends StatelessWidget {
                     Positioned(
                       top: 8,
                       right: 15,
-                        child: Container(child: Text(dateToStringNew(trip.depatureTime),
-                        style: TextStyle(color: Colors.white),
-                        ),) ),
+                        child: Text(dateToStringNew(trip.depatureTime),
+                        style: const TextStyle(color: Colors.white),
+                        ) ),
                   ],
                 )),
             Container(
@@ -231,7 +220,7 @@ class TripTile extends StatelessWidget {
               ),
               child: Stack(
                 children: [
-                  DottedLine(
+                  const DottedLine(
                     dashColor: Colors.white,
                   ),
                   Align(
@@ -239,7 +228,7 @@ class TripTile extends StatelessWidget {
                     child: Container(
                       width: 20,
                       height: 20,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           color: Color(0xfffdfdfd),
                           borderRadius: BorderRadius.only(
                               bottomRight: Radius.circular(50))),
@@ -250,7 +239,7 @@ class TripTile extends StatelessWidget {
                     child: Container(
                       width: 20,
                       height: 20,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                           color: Color(0xfffdfdfd),
                           borderRadius: BorderRadius.only(
                               bottomLeft: Radius.circular(50))),
@@ -258,20 +247,7 @@ class TripTile extends StatelessWidget {
                   ),
                   Align(
                     alignment: Alignment.center,
-                    child: orderType == "Cargo" ?
-                    Container(
-                      width: 99,
-                      height: 40,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Text(
-                        "Continue",
-                        style: TextStyle(fontSize: 15.0),
-                      ),
-                    )
-                        :Container(
+                    child: Container(
                       width: 99,
                       height: 40,
                       alignment: Alignment.center,
@@ -280,7 +256,7 @@ class TripTile extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10)),
                       child: Text(
                         trip.price.toString() +" SHS",
-                        style: TextStyle(fontSize: 15.0),
+                        style: const TextStyle(fontSize: 15.0),
                       ),
                     ),
                   )

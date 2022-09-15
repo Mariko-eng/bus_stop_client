@@ -44,7 +44,6 @@ dependencies:
   intl: ^0.17.0
   flutter_spinkit: ^5.1.0
   dotted_line: ^3.1.0
-  flutterwave: ^0.0.2
   qr_flutter: ^4.0.0
   country_code_picker: ^2.0.2
   path_provider: ^2.0.4
@@ -52,7 +51,9 @@ dependencies:
   email_validator: ^2.0.1
   google_maps_flutter: ^2.0.6
   dropdown_search: ^3.0.1
-
+  random_string: ^2.3.1
+  url_launcher: ^6.1.5
+  
 flutter_icons:
   android: true
   ios: true

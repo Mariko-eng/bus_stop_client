@@ -23,40 +23,15 @@ class BusStopApp extends StatelessWidget {
             value: LocationsProvider()),
         ChangeNotifierProvider<UserProvider>.value(
             value: UserProvider()),
-
-        // StreamProvider<Client>.value(
-        //   value: AuthService().user,
-        // )
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: "Bus Stop",
         theme: ThemeData(primarySwatch: Colors.red),
+        // home: const TicketPayment()
         home: const Initial(),
       ),
     );
 
-    // return StreamProvider<Client>.value(
-    //   value: AuthService().user,
-    //   child: MaterialApp(
-    //     debugShowCheckedModeBanner: false,
-    //     title: "Bus Stop",
-    //     theme: ThemeData(primarySwatch: Colors.red),
-    //     home: const Initial(),
-    //   ),
-    // );
   }
-
-// @override
-// Widget build(BuildContext context) {
-//   return StreamProvider<Client>.value(
-//     value: AuthService().user,
-//     child: MaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       title: "Bus Stop",
-//       theme: ThemeData(primarySwatch: Colors.red),
-//       home: const Initial(),
-//     ),
-//   );
-// }
 }

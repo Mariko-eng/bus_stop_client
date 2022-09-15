@@ -1,6 +1,4 @@
 import 'package:bus_stop/contollers/authController.dart';
-import 'package:bus_stop/services/auth.dart';
-import 'package:bus_stop/shared/loading.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -97,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Get.snackbar("Incorrect Email",
                               "Try Again");
                         }else if(_passwordController.text.trim().length < 7){
-                           Get.snackbar("Incorrect Email",
+                           Get.snackbar("Incorrect Password",
                               "Try Again");
                         }else{
                           await _userProvider.signIn(_emailController.text.trim(),
@@ -219,8 +217,8 @@ class _LoginScreenState extends State<LoginScreen> {
               _resetPassword(email);
               Navigator.of(context).pop();
               final snackBar = SnackBar(
-                content: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                content: const Padding(
+                  padding: EdgeInsets.all(8.0),
                   child: Text(
                     "Password reset email sent",
                     style: TextStyle(color: Colors.red, fontSize: 18),
@@ -255,13 +253,13 @@ class TextFieldContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 10),
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-      width: size.width * 0.8,
-      height: 70,
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      width: size.width * 0.9,
+      height: 60,
       decoration: BoxDecoration(
-        color: Color(0xffe5e5e5),
-        borderRadius: BorderRadius.circular(29),
+        color: const Color(0xffe5e5e5),
+        borderRadius: BorderRadius.circular(15),
       ),
       child: child,
     );

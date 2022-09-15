@@ -27,7 +27,13 @@ class UserProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     } else {
-      _client = Client(uid: user.uid);
+      // _client = Client(uid: user.uid);
+      _client = await getProfile(uid: user.uid);
+      if(_client == null){
+        await _auth.signOut();
+        _isLoading = false;
+        notifyListeners();
+      }
       _isLoading = false;
       notifyListeners();
     }
@@ -40,7 +46,13 @@ class UserProvider with ChangeNotifier {
       UserCredential credential = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       User user = credential.user;
-      _client = Client(uid: user.uid);
+      _client = await getProfile(uid: user.uid);
+      if(_client == null){
+        await _auth.signOut();
+        _isLoading = false;
+        notifyListeners();
+      }
+      // _client = Client(uid: user.uid);
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -61,7 +73,7 @@ class UserProvider with ChangeNotifier {
       User user = userCredential.user;
       await createProfile(
           uid: user.uid, email: email, phoneNumber: phoneNumber);
-      _client = Client(uid: user.uid);
+      _client = Client(uid: user.uid,username: username,email: email,phoneNumber: phoneNumber);
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -76,6 +88,18 @@ class UserProvider with ChangeNotifier {
       {String uid, String email, String phoneNumber, String username}) async {
     return FirebaseFirestore.instance.collection("clients").doc(uid).set(
         {'email': email, 'phoneNumber': phoneNumber, 'username': username});
+  }
+
+  Future<Client> getProfile({String uid}) async {
+    Client currentClient;
+    try{
+      DocumentSnapshot snap = await FirebaseFirestore.instance.collection("clients").doc(uid).get();
+      currentClient = Client.fromSnapshot(snap);
+      return currentClient;
+    }catch(e){
+      print(e.toString());
+      return currentClient;
+    }
   }
 
   Future signOut() async {

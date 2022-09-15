@@ -1,5 +1,5 @@
 import 'package:bus_stop/models/ticket.dart';
-import 'package:bus_stop/shared/utils.dart';
+import 'package:bus_stop/views/shared/utils.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -8,13 +8,15 @@ import 'dart:typed_data';
 import 'dart:ui';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:bus_stop/models/user.dart';
 
 class TicketDetails extends StatefulWidget {
+  final Client client;
   final TripTicket tripTicket;
   final String tripPrice;
   final String companyName;
 
-  TicketDetails({this.tripTicket, this.tripPrice, this.companyName});
+  const TicketDetails({Key key,this.client,this.tripTicket, this.tripPrice, this.companyName}) : super(key: key);
 
   @override
   _TicketDetailsState createState() => _TicketDetailsState();
@@ -60,7 +62,7 @@ class _TicketDetailsState extends State<TicketDetails> {
                       Align(
                         alignment: Alignment.center,
                         child: Container(
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.only(
                                   topRight: Radius.circular(20),
@@ -71,98 +73,92 @@ class _TicketDetailsState extends State<TicketDetails> {
                                 height: 50,
                                 alignment: Alignment.center,
                                 child: Text(
-                                  widget.tripTicket.ticketId.toUpperCase(),
-                                  style: TextStyle(color: Colors.white),
+                                  widget.tripTicket.ticketNumber.toUpperCase(),
+                                  style: const TextStyle(color: Colors.white),
                                 ),
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                     color: Color(0xffE4181D),
                                     borderRadius: BorderRadius.only(
                                         topRight: Radius.circular(20),
                                         topLeft: Radius.circular(20))),
                               ),
-                              Container(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 40, vertical: 10),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(dateToTime(
-                                          widget.tripTicket.trip.depatureTime)),
-                                      Text(dateToTime(
-                                          widget.tripTicket.trip.eta)),
-                                    ],
-                                  ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 40, vertical: 10),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(dateToTime(
+                                        widget.tripTicket.trip.depatureTime)),
+                                    Text(dateToTime(
+                                        widget.tripTicket.trip.eta)),
+                                  ],
                                 ),
                               ),
-                              Container(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 50, vertical: 2),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                            color: Color(0xffED696C),
-                                            borderRadius:
-                                                BorderRadius.circular(50),
-                                            border: Border.all(
-                                                color: Colors.white, width: 2)),
-                                      ),
-                                      Expanded(
-                                        child: Container(
-                                          height: 3,
-                                          // width: 10,
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 50, vertical: 2),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Container(
+                                      width: 20,
+                                      height: 20,
+                                      decoration: BoxDecoration(
                                           color: Color(0xffED696C),
-                                        ),
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          border: Border.all(
+                                              color: Colors.white, width: 2)),
+                                    ),
+                                    Expanded(
+                                      child: Container(
+                                        height: 3,
+                                        // width: 10,
+                                        color: const Color(0xffED696C),
                                       ),
-                                      Container(
-                                        width: 20,
-                                        height: 20,
-                                        decoration: BoxDecoration(
-                                            color: Color(0xffED696C),
-                                            borderRadius:
-                                                BorderRadius.circular(50),
-                                            border: Border.all(
-                                                color: Colors.white, width: 2)),
-                                      )
-                                    ],
-                                  ),
+                                    ),
+                                    Container(
+                                      width: 20,
+                                      height: 20,
+                                      decoration: BoxDecoration(
+                                          color: const Color(0xffED696C),
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          border: Border.all(
+                                              color: Colors.white, width: 2)),
+                                    )
+                                  ],
                                 ),
                               ),
-                              Container(
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 30, vertical: 10),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 20),
-                                        child: Text(widget
-                                            .tripTicket.departureLocation),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 30, vertical: 10),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 20),
+                                      child: Text(widget
+                                          .tripTicket.departureLocation),
+                                    ),
+                                    Expanded(
+                                      child: Container(
+                                        height: 3,
                                       ),
-                                      Expanded(
-                                        child: Container(
-                                          height: 3,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(4.0),
-                                        child: Text(
-                                            widget.tripTicket.arrivalLocation),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Text(
+                                          widget.tripTicket.arrivalLocation),
+                                    ),
+                                  ],
                                 ),
                               ),
                               Container(

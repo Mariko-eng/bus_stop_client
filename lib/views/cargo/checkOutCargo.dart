@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:bus_stop/models/user.dart';
 
 class CheckOutCargo extends StatefulWidget {
+  final Client client;
   final String itemDesc;
   final String itemDim;
   final String itemDimCharges;
@@ -10,6 +12,7 @@ class CheckOutCargo extends StatefulWidget {
 
   const CheckOutCargo(
       {Key key,
+        this.client,
       this.itemDesc,
       this.itemDim,
       this.recName,
