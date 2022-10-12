@@ -90,9 +90,9 @@ class _TicketDetailsState extends State<TicketDetails> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(dateToTime(
-                                        widget.tripTicket.trip.depatureTime)),
+                                        widget.tripTicket.trip.departureTime)),
                                     Text(dateToTime(
-                                        widget.tripTicket.trip.eta)),
+                                        widget.tripTicket.trip.arrivalTime)),
                                   ],
                                 ),
                               ),
@@ -175,7 +175,7 @@ class _TicketDetailsState extends State<TicketDetails> {
                                         children: [
                                           Text("Date"),
                                           Text(dateToStringNew(widget
-                                              .tripTicket.trip.depatureTime))
+                                              .tripTicket.trip.departureTime))
                                         ],
                                       ),
                                     ],

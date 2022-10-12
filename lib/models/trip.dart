@@ -2,33 +2,45 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Trip {
+  final String id;
   final DocumentReference arrivalLocation;
   final DocumentReference departureLocation;
   final DocumentReference company;
-  final DateTime depatureTime;
-  final DateTime eta;
-  final String id;
+  final DateTime departureTime;
+  final DateTime arrivalTime;
+  final int totalSeats;
   final int occupiedSeats;
   final int price;
-  final int totalSeats;
+  final int totalOrdinarySeats;
+  final int occupiedOrdinarySeats;
+  final int priceOrdinary;
+  final int totalVipSeats;
+  final int occupiedVipSeats;
+  final int priceVip;
   final String tripNumber;
-  final String ticketType;
+  final String tripType;
   Map<String, dynamic> companyData;
   Map<String, dynamic> arrival;
   Map<String, dynamic> departure;
 
   Trip({
+    this.id,
     this.arrivalLocation,
     this.departureLocation,
     this.company,
-    this.depatureTime,
-    this.eta,
-    this.id,
+    this.departureTime,
+    this.arrivalTime,
+    this.totalSeats,
     this.occupiedSeats,
     this.price,
-    this.totalSeats,
+    this.totalOrdinarySeats,
+    this.occupiedOrdinarySeats,
+    this.priceOrdinary,
+    this.totalVipSeats,
+    this.occupiedVipSeats,
+    this.priceVip,
     this.tripNumber,
-    this.ticketType
+    this.tripType
   });
 
   Future<Trip> setCompanyData(BuildContext context) async {
@@ -55,13 +67,19 @@ class Trip {
         arrivalLocation: data['arrivalLocation'],
         departureLocation: data['departureLocation'],
         company: data['company'],
-        eta: data['eta'].toDate(),
-        depatureTime: data['depatureTime'].toDate(),
-        price: data['price'],
-        occupiedSeats: data['occupiedSeats'],
+        departureTime: data['departureTime'].toDate(),
+        arrivalTime: data['arrivalTime'].toDate(),
         totalSeats: data['totalSeats'],
+        occupiedSeats: data['occupiedSeats'],
+        price: data['price'],
+        totalOrdinarySeats: data['totalOrdinarySeats'],
+        occupiedOrdinarySeats: data['occupiedOrdinarySeats'],
+        priceOrdinary: data['priceOrdinary'],
+        totalVipSeats: data['totalVipSeats'],
+        occupiedVipSeats: data['occupiedVipSeats'],
+        priceVip: data['priceVip'],
         tripNumber: data['tripNumber'] ?? "",
-        ticketType: data['ticketType'] ?? ""
+        tripType: data['tripType'] ?? ""
     );
   }
 }
@@ -72,8 +90,8 @@ Stream<List<Trip>> getAllTripsForBusCompany({String companyId}) {
 
   return FirebaseFirestore.instance.collection('trips')
       .where('companyId', isEqualTo: companyId)
-      .where('depatureTime', isGreaterThanOrEqualTo: yesterday)
-      // .orderBy('depatureTime')
+      .where('departureTime', isGreaterThanOrEqualTo: yesterday)
+      // .orderBy('departureTime')
       .snapshots()
       .map((snap) {
     return snap.docs

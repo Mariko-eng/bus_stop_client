@@ -15,5 +15,4 @@ class Client {
       phoneNumber: snapshot.get("phoneNumber")
     );
   }
-
 }

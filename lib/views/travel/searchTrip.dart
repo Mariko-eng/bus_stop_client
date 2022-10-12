@@ -2,11 +2,13 @@ import 'package:bus_stop/models/destination.dart';
 import 'package:bus_stop/models/trip.dart';
 import 'package:bus_stop/views/travel/Trips.dart';
 import 'package:bus_stop/views/busCompany/busCompanyScreen.dart';
+import 'package:bus_stop/views/travel/helpScreen.dart';
 import 'package:bus_stop/views/travel/tickets.dart';
 import 'package:bus_stop/services/auth.dart';
 import 'package:bus_stop/services/firestore.dart';
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:bus_stop/models/user.dart';
@@ -21,13 +23,13 @@ class SearchTrip extends StatefulWidget {
 }
 
 class _SearchTripState extends State<SearchTrip> {
-  Firestore firestore = Firestore();
+  Firestore fireStore = Firestore();
   List<Trip> trips;
   String dateInputText = "";
 
   getTrips({String departureLocationId, String arrivalLocationId}) async {
     final results =
-        await firestore.searchTrips(departureLocationId, arrivalLocationId);
+        await fireStore.searchTrips(departureLocationId, arrivalLocationId);
     setState(() {
       trips = results;
     });
@@ -47,23 +49,41 @@ class _SearchTripState extends State<SearchTrip> {
 
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: const Color(0xfffdfdfd),
-          elevation: 0,
-          leading: GestureDetector(
+        backgroundColor: const Color(0xfffdfdfd),
+        elevation: 0,
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.of(context).pop();
+          },
+          child: SizedBox(
+              width: 20,
+              height: 25,
+              child: Image.asset(
+                'assets/images/back_arrow.png',
+              )),
+        ),
+        title: Text(
+          "TRAVEL MENU".toUpperCase(),
+          style: TextStyle(color: Colors.red[900]),
+        ),
+        actions: [
+          GestureDetector(
             onTap: () {
-              Navigator.of(context).pop();
+              Get.to(() => HelpScreen(
+                    client: widget.client,
+                  ));
             },
-            child: SizedBox(
-                width: 20,
-                height: 25,
-                child: Image.asset(
-                  'assets/images/back_arrow.png',
-                )),
-          ),
-          title: Text(
-            "TRAVEL MENU".toUpperCase(),
-            style: TextStyle(color: Colors.red[900]),
-          )),
+            child: Row(
+              children: [
+                Icon(Icons.help, color: Colors.red[900]),
+                const SizedBox(
+                  width: 10,
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
       body: SafeArea(
         child: SizedBox(
           height: MediaQuery.of(context).size.height,

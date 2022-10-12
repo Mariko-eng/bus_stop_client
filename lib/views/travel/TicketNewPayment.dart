@@ -13,11 +13,12 @@ import 'package:get/get.dart';
 class TicketPayment extends StatefulWidget {
   final Client client;
   final Trip trip;
+  final String ticketChoice;
   final int noOfTickets;
   final int totalAmount;
 
   const TicketPayment(
-      {Key key, this.client, this.trip, this.noOfTickets, this.totalAmount})
+      {Key key, this.client, this.trip,this.ticketChoice ,this.noOfTickets, this.totalAmount})
       : super(key: key);
 
   @override
@@ -36,9 +37,9 @@ class _TicketPaymentState extends State<TicketPayment> {
   @override
   void initState() {
     setState(() {
-      publicKeyController.text =
-      "FLWPUBK_TEST-895362a74986153380262d89bfdc9b8a-X";
-      //publicKeyController.text = "FLWPUBK-7b6099ed229040478723735c0ec8e1ec-X";
+      // publicKeyController.text =
+      // "FLWPUBK_TEST-895362a74986153380262d89bfdc9b8a-X";
+      publicKeyController.text = "FLWPUBK-7b6099ed229040478723735c0ec8e1ec-X";
       encryptionKeyController.text = "5c86f7935b3b4596704a7520";
       emailController.text = widget.client.email;
       amountController.text = widget.totalAmount.toString();
@@ -191,23 +192,36 @@ class _TicketPaymentState extends State<TicketPayment> {
         customer: customer,
         paymentOptions: "card, payattitude, barter",
         customization: Customization(title: "Bus Stop Ticket Payment"),
-        isTestMode: true);
+        isTestMode: false);
 
     final ChargeResponse response = await flutterWave.charge();
     if (response != null) {
       setState(() {
         isLoading = true;
       });
-      await purchaseTicket(
-          client: widget.client,
-          trip: widget.trip,
-          numberOfTickets: widget.noOfTickets,
-          total: widget.totalAmount,
-          amountPaid: 0,
-          status: response.status,
-          success: response.success,
-          transactionId: response.transactionId,
-          txRef: response.txRef);
+      if(widget.ticketChoice == "Ordinary"){
+        await purchaseOrdinaryTicket(
+            client: widget.client,
+            trip: widget.trip,
+            numberOfTickets: widget.noOfTickets,
+            total: widget.totalAmount,
+            amountPaid: 0,
+            status: response.status,
+            success: response.success,
+            transactionId: response.transactionId,
+            txRef: response.txRef);
+      }else{
+        await purchaseVIPTicket(
+            client: widget.client,
+            trip: widget.trip,
+            numberOfTickets: widget.noOfTickets,
+            total: widget.totalAmount,
+            amountPaid: 0,
+            status: response.status,
+            success: response.success,
+            transactionId: response.transactionId,
+            txRef: response.txRef);
+      }
       setState(() {
         isLoading = false;
       });

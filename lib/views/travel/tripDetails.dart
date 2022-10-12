@@ -10,8 +10,15 @@ import 'package:qr_flutter/qr_flutter.dart';
 class TripDetails extends StatefulWidget {
   final Client client;
   final Trip trip;
+  final String ticketChoice;
+  final int ticketChoicePrice;
 
-  const TripDetails({Key key, this.client, this.trip}) : super(key: key);
+  const TripDetails({Key key,
+    this.client,
+    this.trip,
+    this.ticketChoice,
+    this.ticketChoicePrice
+  }) : super(key: key);
 
   @override
   _TripDetailsState createState() => _TripDetailsState();
@@ -27,8 +34,12 @@ class _TripDetailsState extends State<TripDetails> {
     super.initState();
     setState(() {
       noOfTicketsController.text = noOfTickets.toString();
-      totalAmount = widget.trip.price * noOfTickets;
+      totalAmount = widget.ticketChoicePrice * noOfTickets;
     });
+    // setState(() {
+    //   noOfTicketsController.text = noOfTickets.toString();
+    //   totalAmount = widget.trip.price * noOfTickets;
+    // });
   }
 
   @override
@@ -94,8 +105,8 @@ class _TripDetailsState extends State<TripDetails> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(dateToTime(widget.trip.depatureTime)),
-                                    Text(dateToTime(widget.trip.eta)),
+                                    Text(dateToTime(widget.trip.departureTime)),
+                                    Text(dateToTime(widget.trip.arrivalTime)),
                                   ],
                                 ),
                               ),
@@ -192,7 +203,7 @@ class _TripDetailsState extends State<TripDetails> {
                                       children: [
                                         Text("Date"),
                                         Text(dateToStringNew(
-                                            widget.trip.depatureTime))
+                                            widget.trip.departureTime))
                                       ],
                                     ),
                                   ],
@@ -302,15 +313,25 @@ class _TripDetailsState extends State<TripDetails> {
                                             int n = int.parse(val.trim());
                                             setState(() {
                                               noOfTickets = n;
-                                              int amt = widget.trip.price * n;
+                                              int amt = widget.ticketChoicePrice * n;
                                               totalAmount = amt;
                                             });
+                                            // setState(() {
+                                            //   noOfTickets = n;
+                                            //   int amt = widget.trip.price * n;
+                                            //   totalAmount = amt;
+                                            // });
                                           } else {
                                             setState(() {
                                               noOfTickets = 1;
-                                              int amt = widget.trip.price * 1;
+                                              int amt = widget.ticketChoicePrice * 1;
                                               totalAmount = amt;
                                             });
+                                            // setState(() {
+                                            //   noOfTickets = 1;
+                                            //   int amt = widget.trip.price * 1;
+                                            //   totalAmount = amt;
+                                            // });
                                           }
                                         },
                                         decoration: const InputDecoration(
@@ -449,6 +470,7 @@ class _TripDetailsState extends State<TripDetails> {
                   Get.to(() => TicketPayment(
                         client: widget.client,
                         trip: widget.trip,
+                    ticketChoice:widget.ticketChoice,
                         noOfTickets: noOfTickets,
                         totalAmount: totalAmount,
                       ));

@@ -1,6 +1,4 @@
 import 'package:bus_stop/contollers/authController.dart';
-import 'package:bus_stop/services/auth.dart';
-import 'package:bus_stop/views/shared/loading.dart';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
@@ -186,56 +184,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                               "Try Again");
                                         } else{
                                           await _userProvider.registerClient(
-                                              _emailController.text.trim(),
-                                              _passwordController1.text.trim(),
-                                            countryCde+_phoneController.text.trim(),
-                                            _usernameController.text.trim()
+                                            email: _emailController.text.trim(),
+                                            username: _usernameController.text.trim(),
+                                            phoneNumber: countryCde+_phoneController.text.trim(),
+                                            password: _passwordController1.text.trim(),
                                           );
                                         }
-                                        // setState(() {
-                                        //   error = '';
-                                        //   loading = true;
-                                        // });
-                                        // if (_formKey.currentState.validate()){
-                                        //   final bool isValid = EmailValidator.validate(
-                                        //       email.trim());
-                                        //   if(!isValid){
-                                        //     setState(() {
-                                        //       error = 'Incorrect Email';
-                                        //       loading = false;
-                                        //     });
-                                        //     showFloatingSnackBar(context, error);
-                                        //     return;
-                                        //   }
-                                        //   if(_passwordController1.text.trim() != _passwordController2.text.trim()){
-                                        //     setState(() {
-                                        //       error = 'Make Sure That The Passwords Match';
-                                        //       loading = false;
-                                        //     });
-                                        //     showFloatingSnackBar(context, error);
-                                        //     return;
-                                        //   }
-                                        //   dynamic result = await _auth.registerClient(
-                                        //       email, _passwordController2.text,countryCde+ phoneNumber, username);
-                                        //   if (result == null) {
-                                        //     print("Result Null");
-                                        //     setState(() {
-                                        //       error = 'Invalid credentials Or Account Already Exists';
-                                        //       loading = false;
-                                        //     });
-                                        //     showFloatingSnackBar(context, error);
-                                        //     return;
-                                        //   }
-                                        //   else{
-                                        //     // setState(() {
-                                        //     //   loading = false;
-                                        //     // });
-                                        //     return;
-                                        //   }
-                                        // }
-                                        // setState(() {
-                                        //   loading = false;
-                                        // });
                                       },
                                       child: Container(
                                           alignment: Alignment.center,
@@ -244,7 +198,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                               color: Color(0xffE4181D),
                                               borderRadius: BorderRadius.circular(20.0)
                                           ),
-                                          child: Text("Create Account",
+                                          child: const Text("Create Account",
                                             style: TextStyle(
                                                 fontSize: 20,
                                                 color: Colors.white),

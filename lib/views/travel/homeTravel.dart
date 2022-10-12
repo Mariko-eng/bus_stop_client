@@ -14,13 +14,13 @@ class HomeTravel extends StatefulWidget {
 }
 
 class _HomeState extends State<HomeTravel> {
-  Firestore firestore = Firestore();
+  Firestore fireStore = Firestore();
 
   @override
   Widget build(BuildContext context) {
     return StreamProvider<List<Destination>>.value(
       initialData: const [],
-      value: firestore.destinations,
+      value: fireStore.destinations,
       child: SearchTrip(client: widget.client,),
     );
   }

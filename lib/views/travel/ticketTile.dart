@@ -1,6 +1,5 @@
 import 'package:bus_stop/models/ticket.dart';
 import 'package:bus_stop/views/travel/ticketDetail.dart';
-import 'package:bus_stop/services/firestore.dart';
 import 'package:bus_stop/views/shared/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +9,7 @@ class TicketTile extends StatefulWidget {
   final Client client;
   final TripTicket tripTicket;
 
-  TicketTile({Key key,this.client,this.tripTicket}) : super(key: key);
+  const TicketTile({Key key,this.client,this.tripTicket}) : super(key: key);
 
   @override
   _TicketTileState createState() => _TicketTileState();
@@ -85,9 +84,9 @@ class _TicketTileState extends State<TicketTile> {
                                 // widget.tripTicket.trip.id,
                                 style: const TextStyle(color: Colors.white),
                               ),
-                              decoration: const BoxDecoration(
-                                  color: Color(0xffE4181D),
-                                  borderRadius: BorderRadius.only(
+                              decoration: BoxDecoration(
+                                  color: widget.tripTicket.ticketType == "Ordinary" ? Color(0xffE4181D) : Color(0xffeede90),
+                                  borderRadius: const BorderRadius.only(
                                       topRight: Radius.circular(20),
                                       topLeft: Radius.circular(20))),
                             ),
@@ -98,8 +97,8 @@ class _TicketTileState extends State<TicketTile> {
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(dateToTime(
-                                      widget.tripTicket.trip.depatureTime)),
-                                  Text(dateToTime(widget.tripTicket.trip.eta)),
+                                      widget.tripTicket.trip.departureTime)),
+                                  Text(dateToTime(widget.tripTicket.trip.arrivalTime)),
                                 ],
                               ),
                             ),
@@ -198,7 +197,7 @@ class _TicketTileState extends State<TicketTile> {
                                       children: [
                                         Text("Date"),
                                         Text(dateToStringNew(
-                                            widget.tripTicket.trip.depatureTime))
+                                            widget.tripTicket.trip.departureTime))
                                       ],
                                     ),
                                   ],
@@ -215,8 +214,8 @@ class _TicketTileState extends State<TicketTile> {
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text("Ticket Price"),
-                                        Text(widget.tripTicket.trip.price
+                                        Text("Amount Paid"),
+                                        Text(widget.tripTicket.total
                                                 .toString() +
                                             " SHS"),
                                       ],

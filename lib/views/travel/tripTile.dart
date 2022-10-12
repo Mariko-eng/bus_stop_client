@@ -14,10 +14,18 @@ class TripTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
     onTap: (){
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => TripDetails(client: client, trip: trip,)));
+      if(trip.tripType == "Ordinary"){
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => TripDetails(client: client,
+                  trip: trip,
+                  ticketChoice: "Ordinary",
+                  ticketChoicePrice: trip.priceOrdinary,
+                )));
+      }else{
+        _openBottomSheet(context: context);
+      }
     },
       child: Container(
         alignment: Alignment.center,
@@ -84,14 +92,14 @@ class TripTile extends StatelessWidget {
                                 // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    dateToTime(trip.depatureTime),
+                                    dateToTime(trip.departureTime),
                                     style: const TextStyle(color: Colors.white),
                                   ),
                                   const SizedBox(
                                     height: 55,
                                   ),
                                   Text(
-                                    dateToTime(trip.eta),
+                                    dateToTime(trip.arrivalTime),
                                     style: TextStyle(color: Colors.white),
                                   )
                                 ],
@@ -206,7 +214,7 @@ class TripTile extends StatelessWidget {
                     Positioned(
                       top: 8,
                       right: 15,
-                        child: Text(dateToStringNew(trip.depatureTime),
+                        child: Text(dateToStringNew(trip.departureTime),
                         style: const TextStyle(color: Colors.white),
                         ) ),
                   ],
@@ -247,8 +255,9 @@ class TripTile extends StatelessWidget {
                   ),
                   Align(
                     alignment: Alignment.center,
-                    child: Container(
-                      width: 99,
+                    child: trip.tripType == "Ordinary" ?
+                    Container(
+                      width: 150,
                       height: 40,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
@@ -258,6 +267,33 @@ class TripTile extends StatelessWidget {
                         trip.price.toString() +" SHS",
                         style: const TextStyle(fontSize: 15.0),
                       ),
+                    ) : Container(
+                      width: 150,
+                      height: 40,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: RichText(
+                        text: TextSpan(
+                          text: trip.priceOrdinary.toString() + " SHS (ORD)\n",
+                          style: const TextStyle(
+                            fontSize: 15,
+                              color: Colors.black87),
+                          children: [
+                            TextSpan(
+                              text: trip.priceVip.toString() +" SHS (VIP)",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.blue[900]),
+                            )
+                          ]
+                        ),
+                      )
+                      // Text(
+                      //   trip.priceOrdinary.toString() + trip.priceVip.toString() +" SHS",
+                      //   style: const TextStyle(fontSize: 15.0),
+                      // ),
                     ),
                   )
                 ],
@@ -268,6 +304,70 @@ class TripTile extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _openBottomSheet(
+      {BuildContext context}) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return _getTicketOptions(context);
+        });
+  }
+
+  Widget _getTicketOptions(BuildContext context) {
+    final options = [
+      "Buy Ordinary Ticket",
+      "Buy VIP Ticket",
+    ];
+    return Container(
+      height: 150,
+      margin: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+      color: Colors.white,
+      child: ListView(
+        children: options
+            .map((option) => ListTile(
+          onTap: () async{
+            if(option == "Buy Ordinary Ticket"){
+              Navigator.of(context).pop();
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => TripDetails(
+                        client: client,
+                        trip: trip,
+                        ticketChoice: "Ordinary",
+                        ticketChoicePrice: trip.priceOrdinary,
+                      )));
+            }
+            if(option == "Buy VIP Ticket"){
+              Navigator.of(context).pop();
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => TripDetails(
+                        client: client,
+                        trip: trip,
+                        ticketChoice: "VIP",
+                        ticketChoicePrice: trip.priceVip,
+                      )));
+            }
+          },
+          title: Column(
+            children: [
+              Text(
+                option,
+                textAlign: TextAlign.start,
+                style: TextStyle(color: Color(0xFFE4191D)),
+              ),
+              SizedBox(height: 4),
+              Divider(height: 1)
+            ],
+          ),
+        ))
+            .toList(),
       ),
     );
   }

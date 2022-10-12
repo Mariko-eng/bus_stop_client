@@ -1,3 +1,4 @@
+import 'package:bus_stop/models/notifications.dart';
 import 'package:bus_stop/models/trip.dart';
 import 'package:bus_stop/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,6 +19,7 @@ class TripTicket {
   final int numberOfTickets;
   final int total;
   final int amountPaid;
+  final String ticketType;
   final String ticketNumber;
   final String userId;
   final String status;
@@ -35,6 +37,7 @@ class TripTicket {
       this.total,
       this.amountPaid,
       this.tripRef,
+      this.ticketType,
       this.ticketNumber,
       this.userId,
       this.status,
@@ -50,11 +53,18 @@ class TripTicket {
       arrivalLocation: snapshot.get('arrivalLocation'),
       departureLocation: snapshot.get('departureLocation'),
       company: snapshot.get('company'),
-      eta: snapshot.get('eta').toDate(),
-      depatureTime: snapshot.get('depatureTime').toDate(),
-      price: snapshot.get('price'),
-      occupiedSeats: snapshot.get('occupiedSeats'),
+      departureTime: snapshot.get('departureTime').toDate(),
+      arrivalTime: snapshot.get('arrivalTime').toDate(),
       totalSeats: snapshot.get('totalSeats'),
+      occupiedSeats: snapshot.get('occupiedSeats'),
+      price: snapshot.get('price'),
+      totalOrdinarySeats: snapshot.get('totalOrdinarySeats'),
+      occupiedOrdinarySeats: snapshot.get('occupiedOrdinarySeats'),
+      priceOrdinary: snapshot.get('priceOrdinary'),
+      totalVipSeats: snapshot.get('totalVipSeats'),
+      occupiedVipSeats: snapshot.get('occupiedVipSeats'),
+      priceVip: snapshot.get('priceVip'),
+      tripType: snapshot.get('tripType'),
     );
 
     return this;
@@ -70,6 +80,7 @@ class TripTicket {
         total: data['total'],
         amountPaid: data['amountPaid'],
         tripRef: data['trip'],
+        ticketType: data['ticketType'] ?? "",
         ticketNumber: data['ticketNumber'] ?? "",
         userId: data['userId'] ?? "",
         status: data['status'] ?? "",
@@ -95,7 +106,7 @@ Future<String> getRandomNumber() async {
   }
 }
 
-Future purchaseTicket(
+Future purchaseOrdinaryTicket(
     {Client client,
     Trip trip,
     int numberOfTickets,
@@ -118,6 +129,7 @@ Future purchaseTicket(
       'userId': client.uid,
       'total': total,
       'amountPaid': amountPaid,
+      'ticketType':"Ordinary",
       'ticketNumber': num,
       'paymentStatus': status,
       'paymentSuccessFul': success,
@@ -128,6 +140,63 @@ Future purchaseTicket(
     };
 
     await ticketsCollection.add(data);
+
+    await addClientNotification(
+      clientId: client.uid,
+      busCompanyId: trip.companyData['id'],
+      title: "New Ordinary Ticket",
+      body: num +" Ticket Has Been Purchased Successfully",
+    );
+
+    DocumentReference tripRef = tripsCollection.doc(trip.id);
+    return await tripRef
+        .update({'occupiedSeats': FieldValue.increment(numberOfTickets)});
+  } catch (e) {
+    print(e.toString());
+  }
+}
+
+Future purchaseVIPTicket(
+    {Client client,
+      Trip trip,
+      int numberOfTickets,
+      int total,
+      int amountPaid,
+      String status,
+      bool success,
+      String transactionId,
+      String txRef}) async {
+  try {
+    String num = await getRandomNumber();
+    final data = {
+      'companyId': trip.companyData['id'],
+      'trip': tripsCollection.doc(trip.id),
+      'tripId': trip.id,
+      'departureLocation': trip.departure['name'],
+      'arrivalLocation': trip.arrival['name'],
+      'numberOfTickets': numberOfTickets,
+      'user': clientsCollection.doc(client.uid),
+      'userId': client.uid,
+      'total': total,
+      'amountPaid': amountPaid,
+      'ticketType':"VIP",
+      'ticketNumber': num,
+      'paymentStatus': status,
+      'paymentSuccessFul': success,
+      'paymentTransactionId': transactionId,
+      'paymentTxRef': txRef,
+      'status': "pending",
+      'createdAt': DateTime.now(),
+    };
+
+    await ticketsCollection.add(data);
+
+    await addClientNotification(
+      clientId: client.uid,
+      busCompanyId: trip.companyData['id'],
+      title: "New VIP Ticket",
+      body: num +" Ticket Has Been Purchased Successfully",
+    );
 
     DocumentReference tripRef = tripsCollection.doc(trip.id);
     return await tripRef
